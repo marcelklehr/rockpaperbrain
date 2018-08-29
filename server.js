@@ -46,4 +46,4 @@ public.route({
 
 const app = new Koa()
 app.use(public.middleware())
-app.listen(3000)
+app.listen(parseInt(process.env['NODE_PORT']))
