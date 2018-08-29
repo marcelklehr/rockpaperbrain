@@ -1,12 +1,12 @@
 const tf = require('@tensorflow/tfjs')
 // Load the binding:
-//require('@tensorflow/tfjs-node')
+require('@tensorflow/tfjs-node')
 const { ROCK, PAPER, SCISSORS, WON, LOST, labels } = require('./consts')
 const { hasWon } = require('./rules')
 
 // Set the backend to TensorFlow:
 
-//tf.setBackend('tensorflow')
+tf.setBackend('tensorflow')
 
 const DEBUG = false
 
