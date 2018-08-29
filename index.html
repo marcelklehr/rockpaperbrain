@@ -1,0 +1,120 @@
+<html>
+<head><title>Rock Paper Scissors: Human vs. AI</title></head>
+<style>
+body {
+	background: #55aa55;
+}
+.container {
+	max-width: 960px;
+	margin: 100px auto;
+	padding: 25px;
+	background: #664400;
+	color: white;
+	font-family: sans-serif;
+}
+h1 {
+	font-size: 35px;
+}
+#username {
+	float: right;
+}
+#score {
+	font-size: 20px;
+	text-align: center;
+	font-family: monospace;
+}
+#currentMatch {
+	color: yellow;
+	font-size: 25px;
+	text-align: center;
+}
+#currentMatch.won {
+	color: #55aa55;
+}
+#currentMatch.lost {
+	color: #aa3300;
+}
+#controls {
+	border-top: 1px solid #aa6600;
+	margin-top: 25px;
+	padding: 20px 0;
+	text-align: center;
+}
+button {
+	background: #aa6600;
+	border: 1px solid #440000;
+	border-radius: 4px;
+	font-size: 15px;
+	cursor: pointer;
+}
+button:hover, button:active, button:focus {
+	background: #cc8800;
+}
+</style>
+<body>
+	<div class="container">
+		<input type="text" id="username" placeholder="What is your name?" />
+		<h1>Rock paper scissors</h1>
+		<div id="score"></div>
+		<div id="currentMatch"></div>
+		<div id="controls">
+			What do you pick?<br/>
+			<button class="move" data-move="ROCK">Rock</button>
+			<button class="move" data-move="PAPER">Paper</button>
+			<button class="move" data-move="SCISSORS">Scissors</button>
+		</div>
+	</div>
+</body>
+<script type="application/javascript">
+var state = { score: [0, 0] },
+  $username = document.querySelector('#username'),
+  $score = document.querySelector('#score'),
+  $currentMatch = document.querySelector('#currentMatch')
+
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('onload')
+
+  // setup events
+  document.querySelectorAll('.move').forEach(function(node) {
+    node.addEventListener('click', function(e) {
+      play($username.value, e.target.dataset.move)
+        .then(update.bind(null, state))
+        .then(render.bind(null, state))
+    })
+  })
+})
+
+function play(player, move) {
+  return fetch('/play', {
+    method: 'POST',
+    body: JSON.stringify({
+      player,
+      move
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then(function(res) {
+    return res.json()
+  })
+}
+function update(state, match) {
+  state.score[match.won ? 0 : 1] += 1
+  state.currentMatch = match
+
+  return Promise.resolve()
+}
+function render(state) {
+  $score.textContent = state.score.join(' : ')
+  $currentMatch.textContent =
+    $username.value +
+    ': ' +
+    state.currentMatch.playerMove +
+    ' - Bot: ' +
+    state.currentMatch.botMove
+  $currentMatch.classList.remove('won')
+  $currentMatch.classList.remove('lost')
+  $currentMatch.classList.add(state.currentMatch.won ? 'won' : 'lost')
+}
+</script>
+</html>
